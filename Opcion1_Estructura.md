@@ -3,27 +3,37 @@
 generado por Gemini.com
 
 ```
-simulador_cpu/
+PROYECTO_SO/
 │
-├── main.py                 # Punto de entrada (Responsabilidad de José - Full Stack)
-├── requirements.txt        # Dependencias (matplotlib, etc.) [cite: 153]
+├── venv/                   # Entorno virtual (Ignorar en Git)
+├── manage.py               # Gestor de comandos
+├── db.sqlite3              # Base de datos (Ignorar en Git si es posible)
 │
-├── core/                   # El corazón lógico (Responsabilidad de Asier - Ingeniero Algoritmos)
-│   ├── __init__.py
-│   ├── proceso.py          # Clase que define qué es un proceso (PCB)
-│   ├── simulador.py        # Clase que orquesta la simulación
-│   └── metricas.py         # Cálculos de espera, retorno, throughput
+├── config/                 # Configuración Global de Django
+│   ├── settings.py         # ¡AQUÍ se registra la app 'simulador'!
+│   └── urls.py             # Rutas principales
 │
-├── algoritmos/             # Implementación pura de los algoritmos [cite: 109, 110]
-│   ├── __init__.py
-│   ├── fcfs.py             # First-Come, First-Served
-│   ├── sjf.py              # Shortest Job First
-│   ├── round_robin.py      # Round Robin
-│   └── prioridades.py      # Planificación por Prioridades
-│
-└── ui/                     # Interfaz Gráfica (Responsabilidad de José) [cite: 118]
-    ├── __init__.py
-    ├── ventana_principal.py
-    └── gantt_plotter.py    # Generador de diagrama de Gantt usando Matplotlib
-
+├── simulador/              # APP PRINCIPAL
+│   ├── migrations/
+│   ├── templates/          # FRONTEND (HTML)
+│   │   └── simulador/
+│   │       ├── base.html   # Estructura común (Navbar, Footer)
+│   │       ├── index.html  # Formulario para meter procesos
+│   │       └── resultado.html # Tabla y Gráfica de Gantt
+│   │
+│   ├── static/             # CSS / JS / Imágenes
+│   │   └── css/
+│   │       └── style.css
+│   │
+│   ├── views.py            # PUENTE: Recibe datos del HTML -> Llama a los algoritmos -> Devuelve resultados
+│   ├── urls.py             # Rutas internas de la app
+│   │
+│   └── motor/              # ¡EL LABORATORIO DE ASIER! (Lógica pura)
+│       ├── __init__.py
+│       ├── proceso.py      # Clase Proceso (Objeto)
+│       ├── fcfs.py         # Algoritmo First-Come First-Served
+│       ├── sjf.py          # Algoritmo Shortest Job First
+│       ├── prioridades.py  # Algoritmo por Prioridades
+│       ├── rr.py           # Algoritmo Round Robin
+│       └── monitor.py      # Clase que calcula promedios (WT, TAT)
 ```
