@@ -6,12 +6,12 @@ class Logger(Executable):
         self.decoratee = decoratee
     
     def execute(self, *args, **kwargs):
-        print("running")
         if self.decoratee:
             print(f"[LOG]: Calling {self.decoratee.getSignature()}")
             for message in self.decoratee.execute(*args, **kwargs):
-                print(f"[LOG]: yielded {message}")
+                if not isinstance(message, str):
+                    yield message
+                else:
+                    print(f"[LOG]: yielded {message}")
         else:
             print(f"[LOG]: {self.getSignature()} not configured correctly")
-
-
