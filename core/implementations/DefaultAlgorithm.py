@@ -5,6 +5,7 @@ class DefaultAlgorithm(Algorithm):
     def execute(self, *args, **kwargs):
         if kwargs:
             print(f"Executing {self.getSignature()} with keyword arguments: {kwargs}")
+            yield f"Processed with kwargs: {kwargs}"
         
 
 """
@@ -16,8 +17,10 @@ todas las clases son basadas en Executor
 
 """
 def test():
+    from ..base.Logger import Logger
     algo = DefaultAlgorithm()
-    algo.execute(**{
+    logger = Logger(algo)
+    logger.execute(**{
         'quantum': 4,
         'processes': [
             {'id': 1, 'pila': [6, 7, 7]},

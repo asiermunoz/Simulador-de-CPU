@@ -5,11 +5,12 @@ class Logger(Executable):
         super().__init__()
         self.decoratee = decoratee
     
-    def execute(self):
+    def execute(self, *args, **kwargs):
         print("running")
         if self.decoratee:
             print(f"[LOG]: Calling {self.decoratee.getSignature()}")
-            self.decoratee.execute()
+            for message in self.decoratee.execute(*args, **kwargs):
+                print(f"[LOG]: yielded {message}")
         else:
             print(f"[LOG]: {self.getSignature()} not configured correctly")
 
