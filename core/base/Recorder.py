@@ -1,15 +1,14 @@
+from core.implementations.PO.Timestamp import Timestamp
 from .Executor import Executable
 
 class Recorder(Executable):
-    def __init__(self, decoratee = None):
-        super().__init__()
-        self.decoratee = decoratee
-    
     def execute(self, *args, **kwargs):
         if self.decoratee:
             for message in self.decoratee.execute(*args, **kwargs):
-                self.processData(message)
-                yield message    
+                if not isinstance(message, Timestamp):
+                     yield message
+                else:
+                    self.processData(message)    
 
     def processData(self, data):
         print(f"[RECORDER]: Processing data: {data}")

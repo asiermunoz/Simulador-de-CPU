@@ -1,17 +1,11 @@
 from .Executor import Executable
+from ..implementations.PO.Log import Log
 
-class Logger(Executable):
-    def __init__(self, decoratee = None):
-        super().__init__()
-        self.decoratee = decoratee
-    
+class Logger(Executable): 
     def execute(self, *args, **kwargs):
         if self.decoratee:
-            print(f"[LOG]: Calling {self.decoratee.getSignature()}")
             for message in self.decoratee.execute(*args, **kwargs):
-                if not isinstance(message, str):
+                if not isinstance(message, Log):
                     yield message
                 else:
-                    print(f"[LOG]: yielded {message}")
-        else:
-            print(f"[LOG]: {self.getSignature()} not configured correctly")
+                    print(f"\n[LOG]: {message}")
