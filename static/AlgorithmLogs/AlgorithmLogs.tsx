@@ -8,9 +8,12 @@ document.addEventListener('DOMContentLoaded', function () {
     fetch('/exec-data/')
       .then(async response => {
         let json = await response.json();
-        console.log(response, json);
-        if (json.data && json.data instanceof Array && display) {
-          display.innerText = json.data.join('\n');
+        if (json.data && json.data instanceof Array && display) {        
+          if (json.data.length === 0) {
+            display.innerText = 'Your logs are empty for now.';
+          } else {
+            display.innerText = json.data.join('\n');
+          }
         }
         if (json.name && algorithm_name) {
           algorithm_name.innerText = json.name;

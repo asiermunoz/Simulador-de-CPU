@@ -28,7 +28,7 @@ html, body {
     background-color: rgb(245, 245, 245);
     border: 1px solid gray;
     padding: 0.2em 0.4em;
-    border-radius: 4px;
+    border-radius: 8px;
     margin: 0 1em;
 }
 
@@ -37,7 +37,7 @@ Button {
     border: 1px solid aliceblue;
     color: white;
     padding: 0.5em 1em;
-    border-radius: 4px;
+    border-radius: 8px;
     font-size: medium;
     font-weight: bold;
 }

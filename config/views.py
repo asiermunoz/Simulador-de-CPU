@@ -27,10 +27,10 @@ def home(request):
 @require_GET
 async def get_exec_data(request):
     instance = AlgorithServiceSingleton.getInstance(algorithm=PollingLogger(ConcreteTimeRecorder(DefaultAlgorithm())))
-    handle = instance.run()
+    handle = instance.run() # Por ahora al terminar se reinicia.
     data = instance.pollLogs()
     from django.http import JsonResponse
     return JsonResponse({
         "name": "DefaultAlgorithm",
         "data": data
-        })
+    })
