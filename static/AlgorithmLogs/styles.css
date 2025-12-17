@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+:root{
+    --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+html, body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+.inline {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.inline > * {
+    flex: none; /* prevents grow/shrink */
+}
+
+.code {
+    font-family: monospace, Arial, sans-serif;
+    background-color: rgb(245, 245, 245);
+    border: 1px solid gray;
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    margin: 0 1em;
+}
+
+Button {
+    background-color: blue;
+    border: 1px solid aliceblue;
+    color: white;
+    padding: 0.5em 1em;
+    border-radius: 4px;
+    font-size: medium;
+    font-weight: bold;
+}

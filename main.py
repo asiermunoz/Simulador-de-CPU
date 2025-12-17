@@ -1,34 +1,41 @@
-from core.base.Logger import Logger
-from core.base.Recorder import Recorder
-from core.implementations.DefaultAlgorithm import DefaultAlgorithm
-from core.implementations.ConcreteTimeRecorder import ConcreteTimeRecorder
+from core.base.Executor import Executable
+from core.implementations.PO.PollLog import PollLog
+from threading import Thread
 
 
+class AlgorithServiceSingleton:
+    _instance = None
 
+    def __new__(cls, algorithm: Executable):
+        if cls._instance is None:
+            cls._instance = super(AlgorithServiceSingleton, cls).__new__(cls)
+            cls._instance.algorithm = algorithm
+        return cls._instance
 
+    def __init__(self, algorithm: Executable):
+        self.running = False
+        self.algorithm = algorithm
+        self.logs = []
 
-def main():
-    """
-    Docstring for main
+    def pollLogs(self) -> list[str]:
+        return self.logs
+    
+    def run(self, *args, **kwargs) -> None:
+        thread = Thread(target=self.execute, args=args, kwargs=kwargs)
+        thread.start()
+        return thread
 
-    Los decoradores mejoran las capacidades de extender e integrar distintas funcionalidades
-    en las implementaciones de los algoritmos sin modificar su codigo fuente.
+    def execute(self, *args, **kwargs):
+        if not self.running:
+            self.running = True
+            for yielded in self.algorithm.execute(*args, **kwargs):
+                if isinstance(yielded, PollLog):
+                    self.logs.append(yielded.message)
+            self.running = False
+            self.logs = []
 
-    En este ejemplo, se decora DefaultAlgorithm con Logger y Recorder.
-    1. Logger registra las llamadas y los datos yieldados por DefaultAlgorithm.
-    2. Recorder procesa los datos yieldados (simulando grabacion o almacenamiento).
-
-    Para mejorar la trazabilidad de los datos se puede tambien definir un tipo de dato
-    para cada funcionalidad decoradora para identificar el origen de los datos y filtrar
-    segun sea necesario.
-
-    """
-    proc = ConcreteTimeRecorder(Logger(DefaultAlgorithm()))
-    # `Logger.execute` (and the decorated `execute` methods) are generators
-    # (they use `yield`). Calling them without iterating will not run
-    # their bodies. Consume the generator to execute the pipeline.
-    result = proc.run(param1="value1", param2="value2")
-    print("Final result:", result)
-
-if __name__ == "__main__":
-    main()
+    @classmethod
+    def getInstance(cls, algorithm: Executable):
+        if cls._instance is None:
+            cls._instance = AlgorithServiceSingleton(algorithm)
+        return cls._instance

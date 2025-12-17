@@ -5,7 +5,10 @@ class Logger(Executable):
     def execute(self, *args, **kwargs):
         if self.decoratee:
             for message in self.decoratee.execute(*args, **kwargs):
-                if not isinstance(message, Log):
-                    yield message
+                if isinstance(message, Log):
+                    yield self.log(message.message)
                 else:
-                    print(f"\n[LOG]: {message}")
+                    yield message
+                     
+    def log(self, message: str):
+        pass

@@ -20,7 +20,7 @@ class DefaultAlgorithm(Algorithm):
         yield Timestamp(TimestampState.START)
         while time() - start_time < exec_time:
             sleep(epoch)
-            yield Log(f"Executing... {test_logs[randint(0, len(test_logs)) - 1]}")
+            yield Log(test_logs[randint(0, len(test_logs)) - 1] )
             sleep(epoch)
             yield Timestamp(TimestampState.PAUSE)
             # pause work

@@ -115,3 +115,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+# Additional directories for static files during development
+from pathlib import Path as _Path
+STATICFILES_DIRS = [
+    _Path(__file__).resolve().parent.parent / "static",
+]

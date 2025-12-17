@@ -13,5 +13,3 @@ class ConcreteTimeRecorder(Recorder):
 
         measurement = (time() - self.start_time, str(data))
         self.recorded_data.append(measurement)
-
-        print("\n[TIME RECORDER]: Process timestamp:", measurement)
