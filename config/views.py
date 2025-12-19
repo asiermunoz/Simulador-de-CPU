@@ -1,12 +1,16 @@
 from django.http import HttpResponse, HttpResponseNotFound
 from django.views.decorators.http import require_GET
 from pathlib import Path
+from django.http import JsonResponse
 
 from main import AlgorithServiceSingleton
 from core.implementations.DefaultAlgorithm import DefaultAlgorithm
+from core.implementations.RoundRobin import RoundRobin
 from core.implementations.ConcreteTimeRecorder import ConcreteTimeRecorder
 from core.implementations.PollingLogger import PollingLogger
 from core.base.Logger import Logger
+from core.base.ProcessUpdateMonitor import ProcessUpdateMonitor
+from core.base.Process import Process
 
 
 
@@ -26,11 +30,34 @@ def home(request):
 
 @require_GET
 async def get_exec_data(request):
-    instance = AlgorithServiceSingleton.getInstance(algorithm=PollingLogger(ConcreteTimeRecorder(DefaultAlgorithm())))
-    handle = instance.run() # Por ahora al terminar se reinicia.
+    instance = AlgorithServiceSingleton.getInstance()
+    if instance is None:
+        return JsonResponse({
+            "name": "",
+            "data": []
+        })
+    algorithm = instance.algorithm
     data = instance.pollLogs()
-    from django.http import JsonResponse
     return JsonResponse({
-        "name": "DefaultAlgorithm",
+        "name": algorithm.getSignature(),
         "data": data
     })
+
+@require_GET
+def start_algorithm(request):
+    algorithm = RoundRobin()
+    instance = AlgorithServiceSingleton.getInstance(
+        algorithm=
+        PollingLogger(
+            ProcessUpdateMonitor(
+                ConcreteTimeRecorder(
+                    algorithm
+                    )
+                )
+            )
+        )
+    handle = instance.run(
+        quantum=3,
+        process_stack=Process.fromList([10, 5, 7, 9, 2])
+    ) # Por ahora al terminar se reinicia.
+    return JsonResponse({"status": instance.is_running()}, status=200)

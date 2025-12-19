@@ -7,7 +7,7 @@ class TimestampState:
     RESUME = 3
 
     @classmethod
-    def from_int(cls, state: int) -> str:
+    def toString(cls, state: int) -> str:
         if state == cls.START:
             return "START"
         elif state == cls.END:
@@ -24,6 +24,6 @@ class Timestamp(ParameterObject):
         self.timestamp = timestamp
 
     def __str__(self):
-        return TimestampState.from_int(self.timestamp) if isinstance(self.timestamp, int) else str(self.timestamp)
+        return TimestampState.toString(self.timestamp) if isinstance(self.timestamp, int) else str(self.timestamp)
     
     

@@ -22,4 +22,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('home/', views.home, name='home'),
     path('exec-data/', views.get_exec_data, name='exec-data'),
+    path('start-algorithm/', views.start_algorithm, name='start-algorithm'),
 ]

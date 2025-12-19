@@ -6,9 +6,9 @@ class Recorder(Executable):
         if self.decoratee:
             for message in self.decoratee.execute(*args, **kwargs):
                 if isinstance(message, Timestamp):
-                    self.processData(message)    
+                    yield self.processData(message)    
                 else:
-                     yield message
+                    yield message
 
     def processData(self, data):
         print(f"[RECORDER]: Processing data: {data}")

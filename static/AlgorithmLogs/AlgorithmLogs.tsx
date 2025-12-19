@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const refresh_interval = 1000; // 1 second
 
   async function refresh_logs() {
+    console.log('Refreshing logs...');
     fetch('/exec-data/')
       .then(async response => {
         let json = await response.json();
@@ -24,7 +25,18 @@ document.addEventListener('DOMContentLoaded', function () {
       });
   }
 
-  if (btn) btn.addEventListener('click', refresh_logs);
+  async function start_algortithm() {    
+    fetch('/start-algorithm/')
+      .then(async response => {
+        let json = await response.json();
+        console.log('Algorithm started:', json);
+      })
+      .catch(error => {
+        console.error('Error starting algorithm:', error);
+      });
+  }
+
+  if (btn) btn.addEventListener('click', start_algortithm);
   setInterval(refresh_logs, refresh_interval);
 });
 

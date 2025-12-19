@@ -26,16 +26,22 @@ class AlgorithServiceSingleton:
         return thread
 
     def execute(self, *args, **kwargs):
+        self.logs = []
         if not self.running:
             self.running = True
             for yielded in self.algorithm.execute(*args, **kwargs):
                 if isinstance(yielded, PollLog):
                     self.logs.append(yielded.message)
             self.running = False
-            self.logs = []
 
     @classmethod
-    def getInstance(cls, algorithm: Executable):
-        if cls._instance is None:
+    def getInstance(cls, algorithm: Executable = None):
+        if algorithm is None and cls._instance is None:
+            return None
+        
+        elif cls._instance is None:
             cls._instance = AlgorithServiceSingleton(algorithm)
         return cls._instance
+    
+    def is_running(self) -> bool:
+        return self.running
