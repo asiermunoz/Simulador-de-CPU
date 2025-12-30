@@ -1,0 +1,65 @@
+Generado por Gemini.com:
+
+Patrón de Estrategia (Strategy Pattern) dentro de una arquitectura de capas desacopladas.
+
+Aquí tienes la estructura propuesta para el proyecto en Django, diseñada para que la lógica del CPU esté aislada del entorno web:
+
+1. Árbol de Directorios del Proyecto
+
+Plaintext
+cpu_simulator_pro/
+│
+├── manage.py
+├── core/                         # Configuración principal de Django
+│   ├── settings.py
+│   └── urls.py
+│
+├── simulator/                    # Aplicación principal del simulador
+│   ├── migrations/
+│   ├── static/                   # Archivos CSS, JS (Chart.js)
+│   │   └── js/
+│   │       └── gantt_chart.js    # Lógica para renderizar el diagrama
+│   ├── templates/                # Vistas HTML
+│   │   ├── index.html            # Formulario de entrada
+│   │   └── results.html          # Tablas y Gráficos
+│   ├── views.py                  # Orquestador (Recibe datos y llama a la lógica)
+│   ├── urls.py
+│   │
+│   └── scheduler_engine/         # CAPA DE LÓGICA PURA (Independiente)
+│       ├── __init__.py
+│       ├── base_scheduler.py     # Interfaz/Clase abstracta
+│       ├── fcfs.py               # Lógica FCFS
+│       ├── sjf_non_preemptive.py # Lógica SJF
+│       ├── round_robin.py        # Lógica Round Robin
+│       ├── priority.py           # Lógica Prioridades
+│       └── metrics_calculator.py # Cálculos de WT, TAT, RT
+│
+└── tests/                        # Pruebas Unitarias
+    ├── test_algorithms.py
+    └── test_views.py
+
+    
+2. Descripción de Componentes Clave
+
+A. La Capa scheduler_engine/ (El Corazón)
+Esta carpeta es totalmente independiente de Django. Podrías copiarla a un script de consola y funcionaría igual.
+base_scheduler.py: Define una clase base (o interfaz) que obliga a todos los algoritmos a recibir el mismo formato de datos (ej. una lista de objetos Proceso) y devolver el mismo formato de resultados.
+Archivos de Algoritmos (fcfs.py, etc.): Cada uno contiene una clase específica. Esto permite que si quieres modificar el Round Robin, no toques nada del FCFS.
+
+B. La Capa de Presentación (Frontend)
+Para cumplir con la "Visualización de Diagramas de Gantt" de forma profesional en un entorno web:
+Utilizaremos Chart.js (o una librería similar como ApexCharts).
+Django enviará los resultados en formato JSON desde la vista, y JavaScript se encargará de dibujar las barras de tiempo en el navegador.
+
+3. Flujo de Datos y Mantenibilidad
+
+Entrada: El usuario llena un formulario en index.html (Nombre proceso, tiempo de ráfaga, llegada, prioridad).
+Procesamiento (Views): La vista en views.py captura los datos, instancia la clase del algoritmo seleccionado (ej. SJF()) y ejecuta la simulación.
+Métricas: Los resultados pasan por metrics_calculator.py para obtener los promedios de tiempo de espera y retorno.
+Salida: Django renderiza results.html pasando un objeto con la línea de tiempo para el gráfico de Gantt y las tablas comparativas.
+
+4. Por qué esta estructura es la mejor:
+
+Desacoplamiento: Si el profesor te pide cambiar la interfaz de Django a una API de FastAPI o un script de terminal, la lógica de los algoritmos (scheduler_engine) no cambia ni una línea de código.
+Facilidad de Pruebas: Puedes hacer unittest directamente sobre los archivos .py de los algoritmos sin necesidad de levantar el servidor web.
+Extensibilidad: Si decides agregar un quinto algoritmo (ej. SRTF), solo creas srtf.py dentro de la carpeta engine y lo registras en la vista.
