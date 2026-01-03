@@ -1,0 +1,57 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Resultados - Simulador</title>
+  <link rel="stylesheet" href="{% static 'gantt.css' %}">
+  <style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;padding:20px}table{border-collapse:collapse}td,th{padding:6px 8px;border:1px solid #ddd;margin-bottom:8px}</style>
+</head>
+<body>
+  <h1>Resultados</h1>
+  <p><strong>Algoritmo:</strong> {{ algorithm }} {% if algorithm == 'rr' and quantum %}(quantum={{ quantum }}){% endif %}</p>
+
+  <h2>Métricas</h2>
+  <ul>
+    <li>Avg Waiting Time: {{ metrics.avg_wt }}</li>
+    <li>Avg Turnaround Time: {{ metrics.avg_tat }}</li>
+    <li>Avg Response Time: {{ metrics.avg_rt }}</li>
+  </ul>
+
+  <h2>Procesos</h2>
+  <table>
+    <thead><tr><th>PID</th><th>Arrival</th><th>Burst</th><th>Start</th><th>Completion</th><th>Waiting</th><th>TAT</th><th>Response</th><th>History</th></tr></thead>
+    <tbody>
+      {% for p in processes %}
+      <tr>
+        <td>{{ p.pid }}</td>
+        <td>{{ p.arrival_time }}</td>
+        <td>{{ p.burst_time }}</td>
+        <td>{{ p.start_time }}</td>
+        <td>{{ p.completion_time }}</td>
+        <td>{{ p.waiting_time }}</td>
+        <td>{{ p.turn_around_time }}</td>
+        <td>{{ p.response_time }}</td>
+        <td>
+          {% for seg in p.history %}[{{ seg.start }}-{{ seg.end }}]{% if not forloop.last %}, {% endif %}{% endfor %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <p><a href="/">Volver</a></p>
+  <h2>Gantt</h2>
+  <div id="gantt"></div>
+
+  {{ processes|json_script:"procs-data" }}
+  <script src="{% static 'gantt.js' %}"></script>
+  <script>
+    (function(){
+      const procs = JSON.parse(document.getElementById('procs-data').textContent || '[]');
+      if(window.renderGantt) window.renderGantt(document.getElementById('gantt'), procs);
+    })();
+  </script>
+</body>
+</html>
