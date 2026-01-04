@@ -1,74 +1,139 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<title>Simulador - Crear procesos</title>
-	<style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;padding:20px}table{border-collapse:collapse}td,th{padding:6px 8px}</style>
-</head>
-<body>
-	<h1>Crear / seleccionar procesos</h1>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Simulador - Crear procesos</title>
+    <style>
+      body {
+        font-family: system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+        padding: 20px;
+      }
+      table {
+        border-collapse: collapse;
+      }
+      td,
+      th {
+        padding: 6px 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Crear / seleccionar procesos</h1>
 
-	<form method="post" id="procForm" action="/run/">
-		{% csrf_token %}
-		<div>
-			<strong>Algoritmo:</strong>
-			<label><input type="radio" name="algorithm" value="fcfs" checked> FCFS</label>
-			<label><input type="radio" name="algorithm" value="sjf"> SJF</label>
-			<label><input type="radio" name="algorithm" value="rr"> Round Robin</label>
-			<label><input type="radio" name="algorithm" value="priority"> Priority</label>
-		</div>
+    <form
+      method="post"
+      id="procForm"
+      action="/run/"
+      enctype="multipart/form-data"
+    >
+      {% csrf_token %}
 
-		<div id="quantumWrap" style="display:none;margin-top:8px;">
-			<label>Quantum: <input type="number" name="quantum" min="1" id="quantum" value="3"></label>
-		</div>
+      <div style="border: 1px solid #ccc; padding: 15px; margin-bottom: 20px">
+        <h3>Opción A: Cargar desde Archivo</h3>
+        <p>
+          Formato: <code>PID,Llegada,Ráfaga,Prioridad</code> (sin encabezados)
+        </p>
+        <input type="file" name="process_file" accept=".txt,.csv" />
+      </div>
 
-		<h2>Procesos</h2>
-		<table id="procsTable" border="1">
-			<thead><tr><th>PID</th><th>Arrival</th><th>Burst</th><th>Priority</th><th></th></tr></thead>
-			<tbody></tbody>
-		</table>
+      <div style="border: 1px solid #ccc; padding: 15px">
+        <h3>Opción B: Ingreso Manual</h3>
+        <div>
+          <strong>Modo:</strong>
+          <label
+            ><input type="radio" name="algorithm" value="fcfs" checked />
+            FCFS</label
+          >
+          <label><input type="radio" name="algorithm" value="sjf" /> SJF</label>
+          <label
+            ><input type="radio" name="algorithm" value="rr" /> Round
+            Robin</label
+          >
+          <label
+            ><input type="radio" name="algorithm" value="priority" />
+            Priority</label
+          >
+          <label style="font-weight: bold; color: blue"
+            ><input type="radio" name="algorithm" value="compare" /> ★ COMPARAR
+            TODOS</label
+          >
+        </div>
 
-		<div style="margin-top:10px">
-			<button type="button" id="addRow">Añadir proceso</button>
-			<button type="submit">Enviar</button>
-		</div>
-	</form>
+        <div id="quantumWrap" style="display: none; margin-top: 8px">
+          <label
+            >Quantum (para RR):
+            <input type="number" name="quantum" min="1" id="quantum" value="3"
+          /></label>
+        </div>
 
-	{% if submitted %}
-	<h2>Procesos enviados</h2>
-	<ul>
-		{% for p in submitted %}
-			<li>PID {{ p.pid }} — arrival={{ p.arrival_time }}, burst={{ p.burst_time }}, priority={{ p.priority }}</li>
-		{% endfor %}
-	</ul>
-	{% endif %}
+        <table id="procsTable" border="1" style="margin-top: 10px; width: 100%">
+          <thead>
+            <tr>
+              <th>PID</th>
+              <th>Arrival</th>
+              <th>Burst</th>
+              <th>Priority</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
 
-	<script>
-	function addRow(p){
-		p = p || {pid:'', arrival_time:'', burst_time:'', priority:''};
-		const tbody=document.querySelector('#procsTable tbody');
-		const tr=document.createElement('tr');
-		tr.innerHTML = `<td><input name="pid" required value="${p.pid}"></td>
+        <div style="margin-top: 10px">
+          <button type="button" id="addRow">Añadir proceso</button>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px; text-align: center">
+        <button type="submit" style="padding: 10px 20px; font-size: 16px">
+          EJECUTAR SIMULACIÓN
+        </button>
+      </div>
+    </form>
+
+    {% if submitted %}
+    <h2>Procesos enviados</h2>
+    <ul>
+      {% for p in submitted %}
+      <li>
+        PID {{ p.pid }} — arrival={{ p.arrival_time }}, burst={{ p.burst_time
+        }}, priority={{ p.priority }}
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    <script>
+      function addRow(p) {
+        p = p || { pid: "", arrival_time: "", burst_time: "", priority: "" };
+        const tbody = document.querySelector("#procsTable tbody");
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td><input name="pid" required value="${p.pid}"></td>
 		<td><input name="arrival_time" type="number" min="0" required value="${p.arrival_time}"></td>
 		<td><input name="burst_time" type="number" min="0" required value="${p.burst_time}"></td>
 		<td><input name="priority" type="number" value="${p.priority}"></td>
 		<td><button type="button" class="rm">X</button></td>`;
-		tr.querySelector('.rm').addEventListener('click', ()=>tr.remove());
-		tbody.appendChild(tr);
-	}
+        tr.querySelector(".rm").addEventListener("click", () => tr.remove());
+        tbody.appendChild(tr);
+      }
 
-	document.getElementById('addRow').addEventListener('click', ()=>addRow());
+      document
+        .getElementById("addRow")
+        .addEventListener("click", () => addRow());
 
-	document.querySelectorAll('input[name="algorithm"]').forEach(r=>{
-		r.addEventListener('change', ()=>{
-			document.getElementById('quantumWrap').style.display = (document.querySelector('input[name="algorithm"]:checked').value==='rr') ? '' : 'none';
-		});
-	});
+      document.querySelectorAll('input[name="algorithm"]').forEach((r) => {
+        r.addEventListener("change", () => {
+          document.getElementById("quantumWrap").style.display =
+            document.querySelector('input[name="algorithm"]:checked').value ===
+            "rr"
+              ? ""
+              : "none";
+        });
+      });
 
-	// add one default row
-	addRow({pid:1, arrival_time:0, burst_time:0, priority:0});
-	</script>
-</body>
+      // add one default row
+      addRow({ pid: 1, arrival_time: 0, burst_time: 0, priority: 0 });
+    </script>
+  </body>
 </html>
-
