@@ -9,6 +9,16 @@ def calculate_metrics(processes: List[Process]) -> Dict[str, float]:
 	Devuelve un dict con claves: avg_wt, avg_tat, avg_rt y totals.
 	"""
 	n = len(processes)
+	if n == 0:
+		return {
+			"avg_wt": 0.0,
+			"avg_tat": 0.0,
+			"avg_rt": 0.0,
+			"total_wt": 0.0,
+			"total_tat": 0.0,
+			"total_rt": 0.0,
+		}
+	
 	total_wt = 0.0
 	total_tat = 0.0
 	total_rt = 0.0
@@ -22,8 +32,9 @@ def calculate_metrics(processes: List[Process]) -> Dict[str, float]:
 				raise ValueError(f"Proceso {p.pid} no completado, no se pueden calcular métricas")
 
 		if p.response_time is None:
-			# si no fue ejecutado nunca, response_time puede ser None
-			p.response_time = -1
+			# Si el proceso nunca fue ejecutado, response_time debería ser 0
+			# ya que todos los procesos en una simulación completa deben ejecutarse
+			p.response_time = 0
 
 		total_wt += p.waiting_time
 		total_tat += p.turn_around_time

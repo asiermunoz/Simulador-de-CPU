@@ -9,6 +9,9 @@ def fcfs_schedule(processes: List[Process]) -> List[Process]:
 
 	Devuelve la lista de procesos con campos de tiempo completados.
 	"""
+	if not processes:
+		return []
+	
 	procs = [copy.deepcopy(p) for p in processes]
 	procs.sort(key=lambda p: p.sort_key_arrival())
 

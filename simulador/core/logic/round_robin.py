@@ -1,7 +1,4 @@
 from typing import List
-
-# Round Robin implementation goes here
-from typing import List
 from collections import deque
 import copy
 
@@ -13,6 +10,8 @@ def round_robin_schedule(processes: List[Process], quantum: int) -> List[Process
 
 	Devuelve la lista de procesos completados (orden de finalización).
 	"""
+	if not processes:
+		return []
 	if quantum <= 0:
 		raise ValueError("quantum debe ser > 0")
 

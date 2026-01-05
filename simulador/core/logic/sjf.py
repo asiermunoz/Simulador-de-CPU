@@ -7,6 +7,9 @@ def sjf_schedule(processes: List[Process]) -> List[Process]:
 
 	Selecciona el proceso con menor `burst_time` entre los listos.
 	"""
+	if not processes:
+		return []
+	
 	procs = [copy.deepcopy(p) for p in processes]
 	procs.sort(key=lambda p: p.sort_key_arrival())
 
