@@ -5,7 +5,15 @@ from .process import Process
 def priority_schedule(processes: List[Process]) -> List[Process]:
 	"""Simulación de planificación por prioridad (no preemptiva).
 
-	Se asume que menor valor de `priority` implica mayor prioridad.
+	Selecciona siempre el proceso listo con mayor prioridad.
+	IMPORTANTE: menor valor numérico de priority = mayor prioridad.
+	Por ejemplo: priority=1 tiene mayor prioridad que priority=3.
+
+	Args:
+		processes: Lista de procesos a planificar.
+
+	Returns:
+		Lista de procesos completados (orden de finalización).
 	"""
 	if not processes:
 		return []

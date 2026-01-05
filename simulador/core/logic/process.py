@@ -36,10 +36,13 @@ class Process:
 	history: List[Dict[str, int]] = field(default_factory=list)
 
 	def __post_init__(self):
+		"""Valida los datos del proceso después de la inicialización."""
 		if not isinstance(self.pid, int):
 			raise TypeError("pid debe ser int")
-		if self.arrival_time < 0 or self.burst_time < 0:
-			raise ValueError("arrival_time y burst_time deben ser no negativos")
+		if self.arrival_time < 0:
+			raise ValueError("arrival_time debe ser no negativo")
+		if self.burst_time <= 0:
+			raise ValueError("burst_time debe ser positivo (> 0)")
 		self.remaining_time = int(self.burst_time)
 
 	def is_finished(self) -> bool:

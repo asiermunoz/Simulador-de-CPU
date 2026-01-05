@@ -7,7 +7,15 @@ from .process import Process
 def fcfs_schedule(processes: List[Process]) -> List[Process]:
 	"""Simulación FCFS (First-Come, First-Served) no preemptiva.
 
-	Devuelve la lista de procesos con campos de tiempo completados.
+	Ejecuta los procesos en orden de llegada sin interrupción.
+	Los procesos se ordenan por tiempo de llegada y se ejecutan
+	secuencialmente hasta completarse.
+
+	Args:
+		processes: Lista de procesos a planificar.
+
+	Returns:
+		Lista de procesos con campos de tiempo completados (en orden de llegada).
 	"""
 	if not processes:
 		return []

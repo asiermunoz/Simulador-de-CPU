@@ -6,7 +6,20 @@ from .process import Process
 def calculate_metrics(processes: List[Process]) -> Dict[str, float]:
 	"""Calcula promedios de Waiting Time, Turnaround Time y Response Time.
 
-	Devuelve un dict con claves: avg_wt, avg_tat, avg_rt y totals.
+	Args:
+		processes: Lista de procesos completados con métricas calculadas.
+
+	Returns:
+		Dict con las siguientes claves:
+		- avg_wt: Tiempo de espera promedio
+		- avg_tat: Tiempo de retorno promedio
+		- avg_rt: Tiempo de respuesta promedio
+		- total_wt: Suma total de tiempos de espera
+		- total_tat: Suma total de tiempos de retorno
+		- total_rt: Suma total de tiempos de respuesta
+
+	Raises:
+		ValueError: Si algún proceso no está completado.
 	"""
 	n = len(processes)
 	if n == 0:
