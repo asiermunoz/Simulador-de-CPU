@@ -53,12 +53,13 @@ def run_simulator(request):
                         burst = int(parts[2])
                         pri = int(parts[3]) if len(parts) > 3 else 0
                         processes.append(Process(pid=pid, arrival_time=arr, burst_time=burst, priority=pri))
-                except (ValueError, IndexError) as e:
+                except (ValueError, IndexError):
                     return render(request, 'index.html', {'error': f"Error en línea {line_num}: formato inválido."})
         except UnicodeDecodeError:
             return render(request, 'index.html', {'error': "Error: el archivo debe estar codificado en UTF-8."})
-        except Exception:
-            return render(request, 'index.html', {'error': "Error al procesar el archivo. Verifica el formato."})
+        except (IOError, OSError) as e:
+            # Errores de lectura de archivo
+            return render(request, 'index.html', {'error': "Error al leer el archivo. Intenta nuevamente."})
     
     # Si no hay archivo, intentar carga manual del formulario
     if not processes:
@@ -146,7 +147,11 @@ def run_simulator(request):
         # Cálculo final de métricas y preparación de datos para Gantt
         metrics = calculate_metrics(result)
         procs_data = [p.to_dict() for p in result]
-    except Exception as e:
+    except (ValueError, TypeError) as e:
+        # Capturar errores de validación y cálculo
+        return render(request, 'index.html', {'error': "Error al ejecutar la simulación. Verifica los datos de entrada."})
+    except Exception:
+        # Capturar errores inesperados sin exponer detalles internos
         return render(request, 'index.html', {'error': "Error al ejecutar la simulación."})
     
     # Determinar límites del timeline para visualización
