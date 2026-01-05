@@ -21,10 +21,10 @@ def round_robin_schedule(processes: List[Process], quantum: int) -> List[Process
 	Raises:
 		ValueError: Si quantum <= 0.
 	"""
-	if not processes:
-		return []
 	if quantum <= 0:
 		raise ValueError("quantum debe ser > 0")
+	if not processes:
+		return []
 
 	procs = [copy.deepcopy(p) for p in processes]
 	procs.sort(key=lambda p: p.sort_key_arrival())

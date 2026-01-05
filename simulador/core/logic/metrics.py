@@ -45,9 +45,8 @@ def calculate_metrics(processes: List[Process]) -> Dict[str, float]:
 				raise ValueError(f"Proceso {p.pid} no completado, no se pueden calcular métricas")
 
 		if p.response_time is None:
-			# Si el proceso nunca fue ejecutado, response_time debería ser 0
-			# ya que todos los procesos en una simulación completa deben ejecutarse
-			p.response_time = 0
+			# Si un proceso completado no tiene response_time, hay un error en la simulación
+			raise ValueError(f"Proceso {p.pid} no tiene response_time definido. Verifica la simulación.")
 
 		total_wt += p.waiting_time
 		total_tat += p.turn_around_time

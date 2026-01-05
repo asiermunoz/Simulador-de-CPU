@@ -44,18 +44,19 @@ def run_simulator(request):
                 line = line.strip()
                 if not line or line.startswith('#'):  # Ignorar líneas vacías y comentarios
                     continue
-                parts = line.split(',')
-                if len(parts) >= 3:
-                    # Formato esperado: PID, Arrival, Burst, [Priority]
-                    pid = int(parts[0])
-                    arr = int(parts[1])
-                    burst = int(parts[2])
-                    pri = int(parts[3]) if len(parts) > 3 else 0
-                    processes.append(Process(pid=pid, arrival_time=arr, burst_time=burst, priority=pri))
+                try:
+                    parts = line.split(',')
+                    if len(parts) >= 3:
+                        # Formato esperado: PID, Arrival, Burst, [Priority]
+                        pid = int(parts[0])
+                        arr = int(parts[1])
+                        burst = int(parts[2])
+                        pri = int(parts[3]) if len(parts) > 3 else 0
+                        processes.append(Process(pid=pid, arrival_time=arr, burst_time=burst, priority=pri))
+                except (ValueError, IndexError) as e:
+                    return render(request, 'index.html', {'error': f"Error en línea {line_num}: formato inválido."})
         except UnicodeDecodeError:
             return render(request, 'index.html', {'error': "Error: el archivo debe estar codificado en UTF-8."})
-        except ValueError as e:
-            return render(request, 'index.html', {'error': "Error en el formato del archivo. Verifica que los valores sean numéricos."})
         except Exception:
             return render(request, 'index.html', {'error': "Error al procesar el archivo. Verifica el formato."})
     
