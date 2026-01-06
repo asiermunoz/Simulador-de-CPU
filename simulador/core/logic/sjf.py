@@ -3,10 +3,20 @@ import copy
 
 from .process import Process
 def sjf_schedule(processes: List[Process]) -> List[Process]:
-	"""Simulación SJF no preemptiva.
+	"""Simulación SJF (Shortest Job First) no preemptiva.
 
-	Selecciona el proceso con menor `burst_time` entre los listos.
+	Selecciona el proceso con menor burst_time entre los procesos listos.
+	Minimiza el tiempo de espera promedio al priorizar trabajos cortos.
+
+	Args:
+		processes: Lista de procesos a planificar.
+
+	Returns:
+		Lista de procesos completados (orden de finalización).
 	"""
+	if not processes:
+		return []
+	
 	procs = [copy.deepcopy(p) for p in processes]
 	procs.sort(key=lambda p: p.sort_key_arrival())
 

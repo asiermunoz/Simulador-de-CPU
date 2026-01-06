@@ -33,19 +33,33 @@ def run_simulator(request):
     if 'process_file' in request.FILES:
         # Procesamiento de archivo cargado (CSV/TXT)
         uploaded_file = request.FILES['process_file']
+        
+        # Validar tamaño del archivo (máximo 1MB)
+        if uploaded_file.size > 1024 * 1024:
+            return render(request, 'index.html', {'error': "El archivo es demasiado grande. Máximo 1MB."})
+        
         try:
             file_data = uploaded_file.read().decode('utf-8').splitlines()
-            for line in file_data:
-                parts = line.strip().split(',')
-                if len(parts) >= 3:
-                    # Formato esperado: PID, Arrival, Burst, [Priority]
-                    pid = int(parts[0])
-                    arr = int(parts[1])
-                    burst = int(parts[2])
-                    pri = int(parts[3]) if len(parts) > 3 else 0
-                    processes.append(Process(pid=pid, arrival_time=arr, burst_time=burst, priority=pri))
-        except Exception as e:
-            return render(request, 'index.html', {'error': f"Error de lectura: {str(e)}"})
+            for line_num, line in enumerate(file_data, 1):
+                line = line.strip()
+                if not line or line.startswith('#'):  # Ignorar líneas vacías y comentarios
+                    continue
+                try:
+                    parts = line.split(',')
+                    if len(parts) >= 3:
+                        # Formato esperado: PID, Arrival, Burst, [Priority]
+                        pid = int(parts[0])
+                        arr = int(parts[1])
+                        burst = int(parts[2])
+                        pri = int(parts[3]) if len(parts) > 3 else 0
+                        processes.append(Process(pid=pid, arrival_time=arr, burst_time=burst, priority=pri))
+                except (ValueError, IndexError):
+                    return render(request, 'index.html', {'error': f"Error en línea {line_num}: formato inválido."})
+        except UnicodeDecodeError:
+            return render(request, 'index.html', {'error': "Error: el archivo debe estar codificado en UTF-8."})
+        except (IOError, OSError) as e:
+            # Errores de lectura de archivo
+            return render(request, 'index.html', {'error': "Error al leer el archivo. Intenta nuevamente."})
     
     # Si no hay archivo, intentar carga manual del formulario
     if not processes:
@@ -63,14 +77,19 @@ def run_simulator(request):
                     priority=int(priorities[i]) if i < len(priorities) and priorities[i] != '' else 0
                 )
                 processes.append(p)
-            except (ValueError, IndexError):
+            except (ValueError, IndexError, TypeError):
                 continue
 
     if not processes:
-         return redirect('index')
+         return render(request, 'index.html', {'error': "No se proporcionaron procesos válidos."})
 
     algorithm = request.POST.get('algorithm')
-    quantum_val = int(request.POST.get('quantum')) if request.POST.get('quantum') else 3
+    try:
+        quantum_val = int(request.POST.get('quantum', 3))
+        if quantum_val <= 0:
+            quantum_val = 3
+    except (ValueError, TypeError):
+        quantum_val = 3
 
     # ---------------------------------------------------------
     # 2. MODO COMPARACIÓN (Requerimiento de Análisis)
@@ -113,20 +132,27 @@ def run_simulator(request):
     # ---------------------------------------------------------
     # 3. MODO INDIVIDUAL (Ejecución simple)
     # ---------------------------------------------------------
-    if algorithm == 'fcfs':
-        result = fcfs_schedule(processes)
-    elif algorithm == 'sjf':
-        result = sjf_schedule(processes)
-    elif algorithm == 'rr':
-        result = round_robin_schedule(processes, quantum=quantum_val)
-    elif algorithm == 'priority':
-        result = priority_schedule(processes)
-    else:
-        return redirect('index')
+    try:
+        if algorithm == 'fcfs':
+            result = fcfs_schedule(processes)
+        elif algorithm == 'sjf':
+            result = sjf_schedule(processes)
+        elif algorithm == 'rr':
+            result = round_robin_schedule(processes, quantum=quantum_val)
+        elif algorithm == 'priority':
+            result = priority_schedule(processes)
+        else:
+            return render(request, 'index.html', {'error': "Algoritmo no válido."})
 
-    # Cálculo final de métricas y preparación de datos para Gantt
-    metrics = calculate_metrics(result)
-    procs_data = [p.to_dict() for p in result]
+        # Cálculo final de métricas y preparación de datos para Gantt
+        metrics = calculate_metrics(result)
+        procs_data = [p.to_dict() for p in result]
+    except (ValueError, TypeError) as e:
+        # Capturar errores de validación y cálculo
+        return render(request, 'index.html', {'error': "Error al ejecutar la simulación. Verifica los datos de entrada."})
+    except Exception:
+        # Capturar errores inesperados sin exponer detalles internos
+        return render(request, 'index.html', {'error': "Error al ejecutar la simulación."})
     
     # Determinar límites del timeline para visualización
     min_t = min((seg['start'] for p in procs_data for seg in p.get('history', [])), default=0)
