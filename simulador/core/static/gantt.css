@@ -1,0 +1,18 @@
+.gantt-row{display:flex;align-items:center;margin-bottom:6px}
+.gantt-label{width:80px;font-weight:600;margin-right:8px}
+.gantt-track{flex:1;position:relative;height:28px;background:#f7f7f7;border:1px solid #eee}
+.gantt-seg{position:absolute;height:100%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;border-radius:3px}
+.gantt-timeaxis{display:flex;justify-content:space-between;margin-top:6px;font-size:12px;color:#666}
+
+/* colors */
+.gantt-color-0{background:#1f77b4}
+.gantt-color-1{background:#ff7f0e}
+.gantt-color-2{background:#2ca02c}
+.gantt-color-3{background:#d62728}
+.gantt-color-4{background:#9467bd}
+.gantt-color-5{background:#8c564b}
+
+.gantt-tooltip{position:absolute;padding:6px 8px;background:#222;color:#fff;border-radius:4px;font-size:12px;pointer-events:none;z-index:9999;display:none}
+.gantt-tick{position:relative;height:1px;background:transparent}
+.gantt-tick:before{content:'';position:absolute;left:0;top:0;height:6px;width:1px;background:#ccc}
+.gantt-axis-label{font-size:12px;color:#666;margin-top:6px}

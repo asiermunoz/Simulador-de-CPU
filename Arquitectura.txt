@@ -1,0 +1,46 @@
+Generado por Gemini.com:
+
+Patrón de Estrategia (Strategy Pattern) dentro de una arquitectura de capas desacopladas.
+
+Aquí tienes la estructura propuesta para el proyecto en Django, diseñada para que la lógica del CPU esté aislada del entorno web:
+
+1. Árbol de Directorios del Proyecto
+
+
+
+
+PROYECTO_RAIZ/                  # Tu carpeta principal
+│
+├── venv/                       # Carpeta del Entorno Virtual (Hermana del proyecto)
+│
+└── simulador/                  # Carpeta creada por 'startproject'
+    ├── manage.py               # El corazón de ejecución
+    ├── db.sqlite3              # Tu base de datos (paso 5)
+    │
+    ├── simulador/              # [Carpeta de CONFIGURACIÓN]
+    │   ├── __init__.py
+    │   ├── settings.py         <-- Aquí registraremos 'core'
+    │   ├── urls.py
+    │   ├── asgi.py
+    │   └── wsgi.py
+    │
+    └── core/               # [NUESTRA APP - Ejecuta: python manage.py startapp core]
+        ├── views.py            <-- Recibe ráfagas/prioridades de la web
+        ├── urls.py             <-- Rutas de la simulación
+        │
+        ├── logic/              # <--- LÓGICA PURA DE SO (Independiente)
+        │   ├── __init__.py
+        │   ├── process.py      # Estructura de datos del Proceso
+        │   ├── fcfs.py         # Cada algoritmo en su propio archivo
+        │   ├── sjf.py
+        │   ├── round_robin.py
+        │   ├── priority.py
+        │   └── metrics.py      # Calculadora de WT, TAT y promedios
+        │
+        ├── templates/          # Interfaz de usuario (HTML)
+        │   ├── index.html
+        │   └── results.html
+        │
+        └── static/             # Estilos y Gráficos (JS)
+            └── gantt.js
+    
